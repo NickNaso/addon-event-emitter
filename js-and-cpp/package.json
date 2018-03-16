@@ -1,0 +1,13 @@
+{
+  "name": "js-and-cpp",
+  "version": "0.0.0",
+  "description": "Node.js Addons Event Emitter example #3",
+  "main": "index.js",
+  "private": true,
+  "gypfile": true,
+  "dependencies": {
+    "node-addon-api": "*",
+    "bindings": "*"
+  }
+}
+  

@@ -60,3 +60,5 @@ typings/
 # exclude build forlder
 build
 
+# exclude VSCode meta informations
+.vscode

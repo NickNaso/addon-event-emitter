@@ -1,13 +1,15 @@
 {
-  "name": "js-and-cpp",
+  "name": "emitter-from-cpp-example",
   "version": "0.0.0",
-  "description": "Node.js Addons Event Emitter example #3",
+  "description": "Node.js Addons - emit event from C++ to JS",
   "main": "index.js",
   "private": true,
   "gypfile": true,
+  "scripts": {
+    "start": "node index.js"
+  },
   "dependencies": {
     "node-addon-api": "*",
     "bindings": "*"
   }
 }
-  

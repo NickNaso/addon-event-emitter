@@ -19,7 +19,7 @@
 'use strict'
 
 const EventEmitter = require('events').EventEmitter
-const addon = require('bindings')('emit_from_cpp')
+const addon = require('bindings')('native_emitter')
 
 const emitter = new EventEmitter()
 

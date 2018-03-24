@@ -1,7 +1,7 @@
 {
   "targets": [
     {
-      "target_name": "emit_from_cpp",
+      "target_name": "native_emitter",
       "sources": [
         "src/emit-from-cpp.cc"
       ],

@@ -1,7 +1,7 @@
 {
-  "name": "emitter-from-cpp-example",
+  "name": "bidirectional-emitter-example",
   "version": "0.0.0",
-  "description": "Node.js Addons - emit event from C++ to JS",
+  "description": "Node.js Addons - emit event from C++ to JS and vice versa",
   "main": "index.js",
   "private": true,
   "gypfile": true,

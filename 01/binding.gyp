@@ -3,7 +3,8 @@
     {
       "target_name": "native_emitter",
       "sources": [
-        "src/emit-from-cpp.cc"
+        "src/binding.cc",
+        "src/native-emitter.cc"
       ],
       'cflags!': [ '-fno-exceptions' ],
       'cflags_cc!': [ '-fno-exceptions' ],

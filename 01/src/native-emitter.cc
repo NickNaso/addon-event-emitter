@@ -16,32 +16,42 @@
  * Nicola Del Gobbo <nicoladelgobbo@gmail.com>
  ******************************************************************************/
 
-#include<napi.h>
-
 #include <chrono>
 #include <thread>
 #include <iostream>
 
+#include "native-emitter.h"
 
-// All work but it's not a good practice bacause all long running task should be
-// executed out of the event loop
-Napi::Value CallEmit(const Napi::CallbackInfo& info) {
+Napi::FunctionReference NativeEmitter::constructor;
+
+Napi::Object NativeEmitter::Init(Napi::Env env, Napi::Object exports) {
+  Napi::HandleScope scope(env);
+  
+  Napi::Function func = DefineClass(env, "NativeEmitter", {
+    InstanceMethod("callAndEmit", &NativeEmitter::CallAndEmit)
+  });
+
+  constructor = Napi::Persistent(func);
+  constructor.SuppressDestruct();
+
+  exports.Set("NativeEmitter", func);
+  return exports;
+}
+
+NativeEmitter::NativeEmitter(const Napi::CallbackInfo& info) 
+: Napi::ObjectWrap<NativeEmitter>(info)  {
+  // NOOP
+}
+
+Napi::Value NativeEmitter::CallAndEmit(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
-    Napi::Function emitter = info[0].As<Napi::Function>();
-    emitter.Call({Napi::String::New(env, "start")});
-    // Here some long running task and return piece of data exectuing some task
+    Napi::Object _self =  info.This().ToObject();
+    Napi::Function emit = _self.Get("emit").As<Napi::Function>();
+    emit.Call(info.This(), { Napi::String::New(env, "start") });
     for(int i = 0; i < 3; i++) {
         std::this_thread::sleep_for(std::chrono::seconds(3));
-        emitter.Call({Napi::String::New(env, "data"), Napi::String::New(env, "data ...")});
+        emit.Call(info.This(), { Napi::String::New(env, "data"), Napi::String::New(env, "data ...") });
     }
-    emitter.Call({Napi::String::New(env, "end")});
+    emit.Call(info.This(), { Napi::String::New(env, "end") });
     return Napi::String::New(env, "OK");
 }
-
-// Init
-Napi::Object Init(Napi::Env env, Napi::Object exports) {
-    exports.Set(Napi::String::New(env, "callEmit"), Napi::Function::New(env, CallEmit));
-    return exports;
-}
-
-NODE_API_MODULE(NODE_GYP_MODULE_NAME, Init);

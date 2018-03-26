@@ -25,30 +25,6 @@
 #include <uv.h>
 #include <mutex>
 
-/*class ProgressWorker : public Napi::AsyncWorker {
-    public:
-        ProgressWorker(const Napi::Function& callback) : Napi::AsyncWorker(callback), p(i) {
-        }
-
-        ~ProgressWorker(){
-        }
-
-        void Execute() {
-        }
-
-        void OnOk() {
-            Napi::HandleScope scope(Env());
-            Callback().Call({Napi::String::New(Env(), "data")});
-        }
-
-        int p;
-};*/
-
-
-/*void  on_progress(uv_async_t *async) {
-    std::cout <<  "Called on worker thread" << std::endl;  
-};*/
-
 class EmitterWorker : public Napi::AsyncWorker {
     public:
         EmitterWorker(const Napi::Function& callback, const Napi::Function& emitter)
@@ -64,10 +40,6 @@ class EmitterWorker : public Napi::AsyncWorker {
 
         ~EmitterWorker() {
         }
-
-        /*void  on_progress(uv_async_t *async) {
-            std::cout <<  "Called on worker thread" << std::endl;  
-        }*/
 
         inline static void OnProgress (uv_async_t *async) {
             std::cout << "OnProgress" << std::endl;
@@ -172,22 +144,6 @@ Napi::Value CallAsyncEmit(const Napi::CallbackInfo& info) {
     //emitterWorker->Receiver().Set("emitter", emitter);
     emitterWorker->Queue();
     return env.Undefined();
-}
-
-
-// All work but it's not a good practice bacause all long running task should be
-// executed out of the event loop
-Napi::Value CallEmit(const Napi::CallbackInfo& info) {
-    Napi::Env env = info.Env();
-    Napi::Function emitter = info[0].As<Napi::Function>();
-    emitter.Call({Napi::String::New(env, "start")});
-    // Here some long running task and return piece of data exectuing some task
-    for(int i = 0; i < 3; i++) {
-        std::this_thread::sleep_for(std::chrono::seconds(2));
-        emitter.Call({Napi::String::New(env, "data"), Napi::String::New(env, "data ...")});
-    }
-    emitter.Call({Napi::String::New(env, "end")});
-    return Napi::String::New(env, "OK");
 }
 
 // Init

@@ -1,7 +1,7 @@
 {
-  "name": "cpp-to.-js",
+  "name": "emitter-from-cpp-example",
   "version": "0.0.0",
-  "description": "Node.js Addons Event Emitter example #1",
+  "description": "Node.js Addons - emit event from C++ to JS from the Worker Thread",
   "main": "index.js",
   "private": true,
   "gypfile": true,

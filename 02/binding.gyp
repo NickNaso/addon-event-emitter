@@ -3,7 +3,7 @@
     {
       "target_name": "cpp_to_js",
       "sources": [
-        "src/binding.cc"
+        "src/emitter-from-cpp.cc"
       ],
       'cflags!': [ '-fno-exceptions' ],
       'cflags_cc!': [ '-fno-exceptions' ],

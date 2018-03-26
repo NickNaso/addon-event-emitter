@@ -14,7 +14,6 @@
  *
  * Contributors - initial API implementation:
  * Nicola Del Gobbo <nicoladelgobbo@gmail.com>
- * Mauro Doganieri <mauro.doganieri@gmail.com>
  ******************************************************************************/
 
 #include<napi.h>
@@ -42,9 +41,7 @@ class EmitterWorker : public Napi::AsyncWorker {
         }
 
         inline static void OnProgress (uv_async_t *async) {
-            std::cout << "OnProgress" << std::endl;
             EmitterWorker *worker = static_cast<EmitterWorker*>(async->data);
-            //std::cout <<  "Called on worker thread " << worker->progress << std::endl; 
             Napi::HandleScope scope(worker->_env);
             worker->emit.Call({Napi::String::New(worker->_env, "data"), Napi::Number::New(worker->_env, 123)});
             worker->Decrease();
@@ -59,9 +56,7 @@ class EmitterWorker : public Napi::AsyncWorker {
 
         void Decrease() {
             std::lock_guard<std::mutex> lk(async_lock);
-            //uv_mutex_lock(&async_lock);
             progress -= 1;
-            //uv_mutex_unlock(&async_lock);
         }
 
         bool IsStoppable() {
@@ -115,8 +110,6 @@ class EmitterWorker : public Napi::AsyncWorker {
             std::cout << "OnOK" << std::endl; 
             Napi::HandleScope scope(Env());
             emit.Call({Napi::String::New(Env(), "end")});
-            // emit.Reset();
-            // emitter.MakeCallback(Env().Global(), {Napi::String::New(Env(), "end")});
             Callback().Call({Napi::String::New(Env(), "OK")});
         }
 
@@ -124,32 +117,24 @@ class EmitterWorker : public Napi::AsyncWorker {
     private:
         Napi::FunctionReference emit;
         int progress = 0;
-        //uv_mutex_t async_lock;
         Napi::Env _env = Env();
         uv_async_t async;
         std::mutex async_lock;
-        //bool end = false;
-        
 };
 
 Napi::Value CallAsyncEmit(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
     Napi::Function emitter = info[0].As<Napi::Function>();
     Napi::Function callback = info[1].As<Napi::Function>();
-    emitter.Call({Napi::String::New(env, "start")});
-    // emitter.Call({Napi::String::New(env, "start"), Napi::String::New(env, "data ...")});
-    // emitter.Call({Napi::String::New(env, "end")});
-    // return Napi::String::New(env, "OK");
+    emitter.Call({ Napi::String::New(env, "start") });
     EmitterWorker* emitterWorker = new EmitterWorker(callback, emitter);
-    //emitterWorker->Receiver().Set("emitter", emitter);
     emitterWorker->Queue();
     return env.Undefined();
 }
 
 // Init
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
-    exports.Set(Napi::String::New(env, "callEmit"), Napi::Function::New(env, CallEmit));
-    exports.Set(Napi::String::New(env, "callAsyncEmit"), Napi::Function::New(env, CallAsyncEmit));
+    exports.Set(Napi::String::New(env, "callAndEmit"), Napi::Function::New(env, CallAndEmit));
     return exports;
 }
 

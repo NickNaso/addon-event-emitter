@@ -14,28 +14,12 @@
  *
  * Contributors - initial API implementation:
  * Nicola Del Gobbo <nicoladelgobbo@gmail.com>
- * Mauro Doganieri <mauro.doganieri@gmail.com>
  ******************************************************************************/
 
 'use strict'
 
 const EventEmitter = require('events').EventEmitter
-const cppTojs = require('bindings')('cpp_to_js')
-
-/*const emitter = new EventEmitter()
-
-emitter.on('start', () => {
-    console.log('### START ...')
-})
-emitter.on('data', (evt) => {
-    console.log(evt);
-})
-
-emitter.on('end', () => {
-    console.log('### END ###')
-})
-
-console.log(cppTojs.callEmit(emitter.emit.bind(emitter)))*/
+const addon = require('bindings')('cpp_to_js')
 
 const emitter = new EventEmitter()
 
@@ -50,7 +34,7 @@ emitter.on('end', () => {
     console.log('### END ###')
 })
 
-cppTojs.callAsyncEmit(emitter.emit.bind(emitter), function (data) {
+addon.callAsyncEmit(emitter.emit.bind(emitter), function (data) {
     
         console.log(data)
       

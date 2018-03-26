@@ -1,5 +1,6 @@
-# addon-event-emitter
-How to create a Node.js addon with event emitter interface
+# Event Emitter on Node.js Native Addons using N-API
+
+How to create and use **[Event Emitter](https://nodejs.org/dist/latest/docs/api/events.html)** on Node.js Native Addons
 
 // WIP
 

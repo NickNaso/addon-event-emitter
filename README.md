@@ -10,6 +10,24 @@ This is my personal research on the Native Addons and it's all in a working prog
 ## This project is under development yet :-) 
 ### Give me other time i work with :heart: for all of you
 
+Node.js includes an **[event system](https://nodejs.org/dist/latest/docs/api/events.html)**
+which is an implementation of the **Observer** pattern that is the most common used
+**event** pattern in Node.js application and for good reasons: it's incredibly
+simple and useful. 
+
+Anyone who has used Node.js should be familiar with **[events](https://nodejs.org/dist/latest/docs/api/events.html)**.
+This module has the responsability to facilitate the communication between **objects**
+of your application.
+
+> Much of the Node.js core API modules are built aroud an idiomatic asynchronous
+> event-driven architecture in which certains kinds of objects (called **emitter**)
+> periodically emit named events that cause Function objects ("listeners") to be called.
+
+Sometimes you need to promote loose coupling system by ensuring that instead of 
+components (modules) referring to each other explicitly, their interaction is 
+handled through a central point. This can help to decouple the systems and improve
+the module reusability.
+
 
 ### Node.js C / C ++ Addons
 

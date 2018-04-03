@@ -25,9 +25,18 @@ of your application.
 
 Sometimes you need to promote loose coupling system by ensuring that instead of 
 components (modules) referring to each other explicitly, their interaction is 
-handled through a central point. This can help to decouple the systems and improve
-the module reusability.
+handled through an exchange of message using the **events**. 
+This can help to decouple the systems and improve the module reusability.
 
+Here you can find a collection of examples where I used or implemented **event
+emitter** interface in a Node.js Native AddOns.
+
+## Examples
+
+* **[Emit event from C++](/00)**
+* **[Implement a Native Addons object that inherit from Event Emitter](/01)**
+* **[Emit event from an AsyncWorker](/02)** - Not ready yet 
+* **[Transform event emitter to stream](/03)** - Not ready yet
 
 ### Node.js C / C ++ Addons
 

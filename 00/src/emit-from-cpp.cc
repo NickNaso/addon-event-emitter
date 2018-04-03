@@ -22,7 +22,6 @@
 #include <thread>
 #include <iostream>
 
-
 // All work but it's not a good practice bacause all long running task should be
 // executed out of the event loop
 Napi::Value CallEmit(const Napi::CallbackInfo& info) {

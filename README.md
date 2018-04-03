@@ -31,6 +31,14 @@ This can help to decouple the systems and improve the module reusability.
 Here you can find a collection of examples where I used or implemented **event
 emitter** interface in a Node.js Native AddOns.
 
+In each example directory, run:
+
+```text
+$ npm install
+$ node-gyp rebuild
+$ node index.js or npm start
+```
+
 ## Examples
 
 * **[Emit event from C++](/00)**

@@ -24,10 +24,16 @@
 #include <uv.h>
 #include <mutex>
 
+#include "JSCaller"
+
 class EmitterWorker : public Napi::AsyncWorker {
     public:
         EmitterWorker(const Napi::Function& callback, const Napi::Function& emitter)
             : Napi::AsyncWorker(callback), emit(Napi::Persistent(emitter)) {
+                // Not use this code but wait that this PR will be landed
+                // https://github.com/nodejs/node/pull/17887
+                JSCaller caller = new JSCaller();
+                
                 uv_async_init(
                     uv_default_loop(),
                     &async,

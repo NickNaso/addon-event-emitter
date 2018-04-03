@@ -45,8 +45,8 @@ NativeEmitter::NativeEmitter(const Napi::CallbackInfo& info)
 
 Napi::Value NativeEmitter::CallAndEmit(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
-    Napi::Object _self =  info.This().ToObject();
-    Napi::Function emit = _self.Get("emit").As<Napi::Function>();
+    //Napi::Object _self =  info.This().As<Napi::Object>();
+    Napi::Function emit = info.This().As<Napi::Object>().Get("emit").As<Napi::Function>();
     emit.Call(info.This(), { Napi::String::New(env, "start") });
     for(int i = 0; i < 3; i++) {
         std::this_thread::sleep_for(std::chrono::seconds(3));

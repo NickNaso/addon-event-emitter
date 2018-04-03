@@ -25,30 +25,6 @@
 #include <uv.h>
 #include <mutex>
 
-/*class ProgressWorker : public Napi::AsyncWorker {
-    public:
-        ProgressWorker(const Napi::Function& callback) : Napi::AsyncWorker(callback), p(i) {
-        }
-
-        ~ProgressWorker(){
-        }
-
-        void Execute() {
-        }
-
-        void OnOk() {
-            Napi::HandleScope scope(Env());
-            Callback().Call({Napi::String::New(Env(), "data")});
-        }
-
-        int p;
-};*/
-
-
-/*void  on_progress(uv_async_t *async) {
-    std::cout <<  "Called on worker thread" << std::endl;  
-};*/
-
 class EmitterWorker : public Napi::AsyncWorker {
     public:
         EmitterWorker(const Napi::Function& callback, const Napi::Function& emitter)
@@ -64,10 +40,6 @@ class EmitterWorker : public Napi::AsyncWorker {
 
         ~EmitterWorker() {
         }
-
-        /*void  on_progress(uv_async_t *async) {
-            std::cout <<  "Called on worker thread" << std::endl;  
-        }*/
 
         inline static void OnProgress (uv_async_t *async) {
             std::cout << "OnProgress" << std::endl;
@@ -116,19 +88,6 @@ class EmitterWorker : public Napi::AsyncWorker {
                 Increase();
                 uv_async_send(&async);
             }
-            //uv_close((uv_handle_t*) &async, NULL);   
-            /*end = true;
-            while(!end) {
-                std::cout << "Not close please" << std::endl;
-            }*/
-            //std::this_thread::sleep_for(std::chrono::seconds(3));
-            //uv_close((uv_handle_t*) &async, NULL); 
-            /*uv_mutex_lock(&async_lock);
-            if (progress == 0) {
-                End();
-            }
-            uv_mutex_unlock(&async_lock);*/
-            //while (!IsStoppable()) {;}
             WaitLoop();
             End();
         }
@@ -174,25 +133,8 @@ Napi::Value CallAsyncEmit(const Napi::CallbackInfo& info) {
     return env.Undefined();
 }
 
-
-// All work but it's not a good practice bacause all long running task should be
-// executed out of the event loop
-Napi::Value CallEmit(const Napi::CallbackInfo& info) {
-    Napi::Env env = info.Env();
-    Napi::Function emitter = info[0].As<Napi::Function>();
-    emitter.Call({Napi::String::New(env, "start")});
-    // Here some long running task and return piece of data exectuing some task
-    for(int i = 0; i < 3; i++) {
-        std::this_thread::sleep_for(std::chrono::seconds(2));
-        emitter.Call({Napi::String::New(env, "data"), Napi::String::New(env, "data ...")});
-    }
-    emitter.Call({Napi::String::New(env, "end")});
-    return Napi::String::New(env, "OK");
-}
-
 // Init
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
-    exports.Set(Napi::String::New(env, "callEmit"), Napi::Function::New(env, CallEmit));
     exports.Set(Napi::String::New(env, "callAsyncEmit"), Napi::Function::New(env, CallAsyncEmit));
     return exports;
 }

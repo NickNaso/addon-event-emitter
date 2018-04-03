@@ -1,9 +1,9 @@
 {
   "targets": [
     {
-      "target_name": "cpp_to_js",
+      "target_name": "async_emitter",
       "sources": [
-        "src/emitter-from-cpp.cc"
+        "src/async-emitter.cc"
       ],
       'cflags!': [ '-fno-exceptions' ],
       'cflags_cc!': [ '-fno-exceptions' ],

@@ -19,7 +19,7 @@
 'use strict'
 
 const EventEmitter = require('events').EventEmitter
-const addon = require('bindings')('cpp_to_js')
+const addon = require('bindings')('async_emitter')
 
 const emitter = new EventEmitter()
 
@@ -34,8 +34,8 @@ emitter.on('end', () => {
     console.log('### END ###')
 })
 
-addon.callAsyncEmit(emitter.emit.bind(emitter), function (data) {
-    
-        console.log(data)
-      
-})
+function OnAsyncEmit(data) {
+    console.log(data)
+}
+
+addon.callAsyncEmit(emitter.emit.bind(emitter), OnAsyncEmit)

@@ -24,7 +24,7 @@
 #include <uv.h>
 #include <mutex>
 
-#include "JSCaller"
+//#include "JSCaller"
 
 class EmitterWorker : public Napi::AsyncWorker {
     public:
@@ -32,7 +32,7 @@ class EmitterWorker : public Napi::AsyncWorker {
             : Napi::AsyncWorker(callback), emit(Napi::Persistent(emitter)) {
                 // Not use this code but wait that this PR will be landed
                 // https://github.com/nodejs/node/pull/17887
-                JSCaller caller = new JSCaller();
+                //JSCaller caller = new JSCaller();
                 
                 uv_async_init(
                     uv_default_loop(),
@@ -49,15 +49,13 @@ class EmitterWorker : public Napi::AsyncWorker {
         inline static void OnProgress (uv_async_t *async) {
             EmitterWorker *worker = static_cast<EmitterWorker*>(async->data);
             Napi::HandleScope scope(worker->_env);
-            worker->emit.Call({Napi::String::New(worker->_env, "data"), Napi::Number::New(worker->_env, 123)});
+            worker->emit.Call({Napi::String::New(worker->_env, "data"), Napi::Number::New(worker->_env, worker->tasks)});
             worker->Decrease();
         }
 
         void Increase() {
             std::lock_guard<std::mutex> lk(async_lock);
-            //uv_mutex_lock(&async_lock);
             progress += 1;
-            //uv_mutex_unlock(&async_lock);
         }
 
         void Decrease() {
@@ -85,23 +83,9 @@ class EmitterWorker : public Napi::AsyncWorker {
             // Here some long running task and return piece of data exectuing some task
             for(int i = 0; i < 3; i++) {
                 std::this_thread::sleep_for(std::chrono::seconds(1));
-                //this->OnData(i); 
                 Increase();
                 uv_async_send(&async);
             }
-            //uv_close((uv_handle_t*) &async, NULL);   
-            /*end = true;
-            while(!end) {
-                std::cout << "Not close please" << std::endl;
-            }*/
-            //std::this_thread::sleep_for(std::chrono::seconds(3));
-            //uv_close((uv_handle_t*) &async, NULL); 
-            /*uv_mutex_lock(&async_lock);
-            if (progress == 0) {
-                End();
-            }
-            uv_mutex_unlock(&async_lock);*/
-            //while (!IsStoppable()) {;}
             WaitLoop();
             End();
         }
@@ -123,6 +107,7 @@ class EmitterWorker : public Napi::AsyncWorker {
     private:
         Napi::FunctionReference emit;
         int progress = 0;
+        int tasks = 0;
         Napi::Env _env = Env();
         uv_async_t async;
         std::mutex async_lock;
@@ -140,7 +125,7 @@ Napi::Value CallAsyncEmit(const Napi::CallbackInfo& info) {
 
 // Init
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
-    exports.Set(Napi::String::New(env, "callAndEmit"), Napi::Function::New(env, CallAndEmit));
+    exports.Set(Napi::String::New(env, "callAsyncEmit"), Napi::Function::New(env, CallAsyncEmit));
     return exports;
 }
 

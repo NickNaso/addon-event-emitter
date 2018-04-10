@@ -76,6 +76,7 @@ class EmitterWorker : public Napi::AsyncWorker {
         }
 
         void End() {
+            WaitLoop();
             uv_close((uv_handle_t*) &async, NULL);
         }
 
@@ -83,10 +84,10 @@ class EmitterWorker : public Napi::AsyncWorker {
             // Here some long running task and return piece of data exectuing some task
             for(int i = 0; i < 3; i++) {
                 std::this_thread::sleep_for(std::chrono::seconds(1));
+                this->tasks = i;
                 Increase();
                 uv_async_send(&async);
             }
-            WaitLoop();
             End();
         }
 

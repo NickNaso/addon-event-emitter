@@ -2,14 +2,6 @@
 
 ## How to create and use **[Event Emitter](https://nodejs.org/dist/latest/docs/api/events.html)** on Node.js Native Addons
 
-// WIP
-
-This is my personal research on the Native Addons and it's all in a working progress status
-
-
-## This project is under development yet :-) 
-### Give me other time i work with :heart: for all of you
-
 Node.js includes an **[event system](https://nodejs.org/dist/latest/docs/api/events.html)**
 which is an implementation of the **Observer** pattern that is the most common used
 **event** pattern in Node.js application and for good reasons: it's incredibly

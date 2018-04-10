@@ -35,8 +35,8 @@ $ node index.js or npm start
 
 * **[Emit event from C++](/00)**
 * **[Implement a Native Addons object that inherit from Event Emitter](/01)**
-* **[Emit event from an AsyncWorker](/02)** - Not ready yet 
-* **[Transform event emitter to stream](/03)** - Not ready yet
+* **[Emit event from an AsyncWorker](/02)**
+* **[Transform event emitter to stream](/03)**
 
 ### Node.js C / C ++ Addons
 

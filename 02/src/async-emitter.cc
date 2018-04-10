@@ -21,10 +21,8 @@
 #include <chrono>
 #include <thread>
 #include <iostream>
-#include <uv.h>
-#include <mutex>
 
-//#include "JSCaller"
+#include "js-emitter.cc"
 
 class EmitterWorker : public Napi::AsyncWorker {
     public:
@@ -32,52 +30,18 @@ class EmitterWorker : public Napi::AsyncWorker {
             : Napi::AsyncWorker(callback), emit(Napi::Persistent(emitter)) {
                 // Not use this code but wait that this PR will be landed
                 // https://github.com/nodejs/node/pull/17887
-                //JSCaller caller = new JSCaller();
-                
-                uv_async_init(
-                    uv_default_loop(),
-                    &async,
-                    OnProgress
-                );
-                async.data = this;
-                
+                this->ec = new JSEmitter(this, OnProgress);
         }
 
         ~EmitterWorker() {
+            // Reset the emitter function reference
+            this->emit.Reset();
         }
 
         inline static void OnProgress (uv_async_t *async) {
             EmitterWorker *worker = static_cast<EmitterWorker*>(async->data);
             Napi::HandleScope scope(worker->_env);
             worker->emit.Call({Napi::String::New(worker->_env, "data"), Napi::Number::New(worker->_env, worker->tasks)});
-            worker->Decrease();
-        }
-
-        void Increase() {
-            std::lock_guard<std::mutex> lk(async_lock);
-            progress += 1;
-        }
-
-        void Decrease() {
-            std::lock_guard<std::mutex> lk(async_lock);
-            progress -= 1;
-        }
-
-        bool IsStoppable() {
-            std::lock_guard<std::mutex> lk(async_lock);
-            if ( progress == 0) {
-                return true;
-            }
-            return false;
-        }
-
-        void WaitLoop() {
-             while (!IsStoppable()) {;}
-        }
-
-        void End() {
-            WaitLoop();
-            uv_close((uv_handle_t*) &async, NULL);
         }
 
         void Execute() {
@@ -85,33 +49,28 @@ class EmitterWorker : public Napi::AsyncWorker {
             for(int i = 0; i < 3; i++) {
                 std::this_thread::sleep_for(std::chrono::seconds(1));
                 this->tasks = i;
-                Increase();
-                uv_async_send(&async);
+                this->ec->Exec();
             }
-            End();
+            this->ec->End();
         }
 
-        void OnData(int progress) {
+        /*void OnData(int progress) {
             std::cout <<  "Progress on the native side: " << progress << std::endl;  
             //emit.Call({Napi::String::New(Env(), "data"), Napi::Number::New(Env(), progress)});
             //emit.MakeCallback(Env().Global(), {Napi::String::New(Env(), "data"), Napi::Number::New(Env(), progress)});
-        }
+        }*/
 
         void OnOK() {
-            std::cout << "OnOK" << std::endl; 
             Napi::HandleScope scope(Env());
-            emit.Call({Napi::String::New(Env(), "end")});
-            Callback().Call({Napi::String::New(Env(), "OK")});
+            emit.Call({ Napi::String::New(Env(), "end") });
+            Callback().Call({ Napi::String::New(Env(), "OK") });
         }
-
 
     private:
         Napi::FunctionReference emit;
-        int progress = 0;
         int tasks = 0;
         Napi::Env _env = Env();
-        uv_async_t async;
-        std::mutex async_lock;
+        JSEmitter* ec;
 };
 
 Napi::Value CallAsyncEmit(const Napi::CallbackInfo& info) {
